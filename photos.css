@@ -4,7 +4,7 @@ body {
     font: 12px Helvetica;
 }
 main {
-    position: fixed;    /* comment this out to make it work in Servo :( */
+    /* position: fixed;    /* comment this out to make it work in Servo :( */
     overflow: scroll;
     top: 0;
     left: 0;
@@ -19,14 +19,18 @@ footer {
     right: 0;
     height: 24px;
     border-top: solid 1px #515151;
-    background: linear-gradient(top, #ececec, #d2d2d2);
+    /*background: linear-gradient(top, #ececec, #d2d2d2);
     background: -moz-linear-gradient(top, #ececec, #d2d2d2);
-    background: -webkit-linear-gradient(top, #ececec, #d2d2d2);
+    background: -webkit-linear-gradient(top, #ececec, #d2d2d2);*/
+    background: #ececec;
     color: #6b6b6b;
     z-index: 1;
 }
 .footer-box {
     position: absolute;
+    width: 200px;
+    top: 0;
+    bottom: 0;
 }
 #zoom-container {
     padding: 1px 23px;
@@ -35,6 +39,7 @@ footer {
 #count-container {
     left: 3px;
     padding-top: 2px;
+    display: none;
 }
 .zoom-icon {
     content: "Hello";
@@ -57,8 +62,26 @@ footer {
 .photo {
     background: url(mimi.jpg) center center / contain no-repeat;
     display: inline-block;
-    filter: drop-shadow(0 3px 3px #444);
     margin: 6px;
-    filter: drop-shadow(0 3px 3px #444);
-    -webkit-filter: drop-shadow(0 3px 3px #444);
+    /*filter: drop-shadow(0 3px 3px #444);
+    -webkit-filter: drop-shadow(0 3px 3px #444);*/
 }
+#zoom-slider {
+    position: absolute;
+    top: 6px;
+    height: 8px;
+    left: 32px;
+    right: 32px;
+    border-radius: 8px;
+    border: solid 1px black;
+}
+#zoom-knob {
+    position: absolute;
+    top: -4px;
+    bottom: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background: black;
+}
+

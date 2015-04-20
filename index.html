@@ -2,32 +2,37 @@
 <html>
 <head>
 <link rel=stylesheet type=text/css href=photos.css></link>
-<style id=photo-rules>
+<title>Photos</title>
+<style>
 .photo {
-    width: 240px;
-    height: 180px;
+    width: 12em;
+    height: 9em;
 }
 </style>
+<style id=photo-styles></style>
 </head>
 <body>
-<main></main>
 <footer>
     <div class=footer-box id=count-container>
         <select id=count onchange="reload()">
             <option value=100>100</option>
             <option value=500>500</option>
             <option value=1000>1,000</option>
-            <option value=3000>3,000</option>
-            <option value=5000 selected>5,000</option>
+            <option value=2000>2,000</option>
+            <option value=3000 selected>3,000</option>
+            <option value=3500>3,500</option>
+            <option value=4000>4,000</option>
+            <option value=5000>5,000</option>
             <option value=10000>10,000</option>
         </select> photos loaded
     </div>
     <div class=footer-box id=zoom-container>
         <div class="zoom-icon before"></div>
-        <input id=zoom-slider type=range min=10 max=500 value=240 oninput="zoom()" onchange="zoom()"></input>
+        <div id=zoom-slider data-value=240><div id=zoom-knob style="left: 80px;"></div></div>
         <div class="zoom-icon after"></div>
     </div>
 </footer>
+<main></main>
 <script>
 // xorshift
 function Rand() {
@@ -48,10 +53,9 @@ Rand.prototype.rand = function() {
 var MAX_PHOTO = 11;
 
 function zoom() {
-    var width = document.getElementById('zoom-slider').value;
-    var height = width * 3 / 4;
-    document.getElementById('photo-rules').innerHTML =
-        ".photo { width: " + width + "px; height: " + height + "px; }";
+    var width = +document.getElementById('zoom-slider').getAttribute('data-value');
+    var main = document.getElementsByTagName('main')[0];
+    main.style.fontSize = (width / 12) + "px";
 }
 
 function reload() {
@@ -63,16 +67,88 @@ function reload() {
         for (var j = i; j < Math.min(photoCount, j + 1000); j++) {
             var photoId = rng.rand() % MAX_PHOTO;
             var photo = "photo" + (photoId < 10 ? "0" : "") + photoId + ".jpg";
-            string += "<div class=photo style='background-image: url(" + photo + ")'></div>";
+            string += "<div class=photo data-photo=\"" + photo + "\" " +
+                "style='background-image: url(" + photo + ")'></div>";
         }
         string += "</div>";
     }
     document.getElementsByTagName("main")[0].innerHTML = string;
+    zoom();
 }
 
-document.getElementById('zoom-slider').value = 240;
-document.getElementById('count').value = 5000;
+function onKeyDown(event) {
+    var zoomSlider = document.getElementById('zoom-slider');
+    switch (event.keyCode) {
+    case 83:
+        // 's'
+        zoomSlider.setAttribute('data-value', +zoomSlider.getAttribute('data-value') + 40);
+        zoom();
+        break;
+    case 65:
+        // 'a'
+        zoomSlider.setAttribute('data-value', +zoomSlider.getAttribute('data-value') - 40);
+        zoom();
+        break;
+    }
+}
+
+function initPhotoStyles() {
+    var css = "";
+    for (var i = 0; i <= 500; i++) {
+        var height = i * 3 / 4;
+        css += ".photo-size-" + i + " { width: " + i + "px; height: " + height +
+            "px; }";
+    }
+    document.getElementById('photo-styles').innerHTML = css;
+}
+
+var sliding = null;
+function startSliding(event) {
+    console.log("mousedown");
+    sliding = event.screenX;
+}
+
+function stopSliding(event) {
+    sliding = null;
+}
+
+function slide(event) {
+    if (!sliding)
+        return;
+    var zoomSlider = document.getElementById('zoom-slider');
+    var clientX = event.clientX;
+    var element = zoomSlider;
+    if (document.write) {
+        while (element != null) {
+            if (element.offsetLeft)
+                clientX -= element.offsetLeft;
+            element = element.parentNode;
+        }
+    } else {
+        var rect = document.body.getBoundingClientRect();
+        clientX -= rect.right - 220;
+    }
+    console.log("mousemove " + clientX);
+    var newValue = Math.min(Math.max(clientX * 3 + 100, 100), 600);
+    document.getElementById('zoom-knob')
+            .setAttribute('style', "left: " + ((newValue - 100) / 3) + "px");
+    zoomSlider.setAttribute('data-value', newValue);
+    zoom();
+}
+
+var zoomKnob = document.getElementById('zoom-knob');
+var zoomSlider = document.getElementById('zoom-slider');
+zoomKnob.addEventListener('mousedown', startSliding, false);
+document.body.addEventListener('mouseup', stopSliding, false);
+document.body.addEventListener('mousemove', slide, false);
+document.addEventListener('keydown', onKeyDown, true);
+
+document.getElementById('zoom-slider').setAttribute('data-value', 240);
+document.getElementById('count').value = 3500;
+
+initPhotoStyles();
 reload();
+
 </script>
 </body>
 </html>
